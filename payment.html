@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Options</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <h1>Payment Options</h1>
+</header>
+
+<main>
+    <section id="payment-options">
+        <h2>Select a Payment Method</h2>
+        <p>Total Amount: ₹<span id="payment-amount">0</span></p>
+        <button onclick="handlePayment('cashOnDelivery')">Cash on Delivery</button>
+        <button onclick="handlePayment('phonePe')">PhonePe</button>
+        <button onclick="handlePayment('googlePay')">Google Pay</button>
+    </section>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const totalAmount = urlParams.get('total');
+        document.getElementById('payment-amount').textContent = totalAmount;
+    });
+
+    function handlePayment(method) {
+        const totalAmount = document.getElementById('payment-amount').textContent;
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const customer = JSON.parse(localStorage.getItem('customer')) || {};
+        let orderDetails = 'Order placed successfully with Cash on Delivery:\n';
+
+        cart.forEach(item => {
+            orderDetails += `${item.product} - ₹${item.price}\n`;
+        });
+
+        orderDetails += `Total Amount: ₹${totalAmount}\n`;
+        orderDetails += `Customer Name: ${customer.name || 'N/A'}\n`;
+        orderDetails += `Customer Email: ${customer.email || 'N/A'}\n`;
+        orderDetails += `Customer Phone: ${customer.phone || 'N/A'}`;
+
+        const whatsappUrl = `https://wa.me/919500384953?text=${encodeURIComponent(orderDetails)}`;
+
+        switch (method) {
+            case 'cashOnDelivery':
+                window.location.href = whatsappUrl;
+                alert(`Your order for ₹${totalAmount} has been placed successfully with Cash on Delivery.`);
+                break;
+            case 'phonePe':
+                window.location.href = 'https://www.phonepe.com/'; // Replace with your PhonePe payment link
+                break;
+            case 'googlePay':
+                window.location.href = 'https://pay.google.com/'; // Replace with your Google Pay payment link
+                break;
+            default:
+                alert('Invalid payment method.');
+        }
+    }
+</script>
+</body>
+</html>
